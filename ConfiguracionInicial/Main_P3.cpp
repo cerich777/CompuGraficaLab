@@ -1,4 +1,4 @@
-//Previo 3
+//Practica 3
 //Sánchez Luján César Ricardo
 //Fecha de entrega: 1 de septiempre del 2026
 //No. Cuenta: 321195414
@@ -221,9 +221,10 @@ int main() {
 		ourShader.Use();
 		glm::mat4 model=glm::mat4(1);
 		glm::mat4 view=glm::mat4(1);
-	
-	    view = glm::translate(view, glm::vec3(0.0f,0.0f,-6.0f));
-		model = glm::rotate( model, 0.5f, glm::vec3( 1.0f, 1.0f, 0.0f ) ); // use to compare orthographic and perspective projection
+		//Cubo C
+	    view = glm::translate(view, glm::vec3(-0.8f,-0.8f,-4.0f));
+		model = glm::rotate( model, 0.10f, glm::vec3( 1.0f, 0.0f, 0.0f ) );// use to compare orthographic and perspective projection
+		model = glm::rotate(model, 0.42f, glm::vec3(0.0f, -1.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(0.8f, 0.8f, 0.8f));
 		//view = glm::translate( view, glm::vec3( screenWidth / 2, screenHeight / 1,-700.0f ) ); // use with orthographic projection
 		
@@ -239,25 +240,26 @@ int main() {
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
-		model = glm::mat4(1);
-		model = glm::translate(model, glm::vec3(1.5f, 1.5f, 0.0f));
-		model = glm::rotate(model, 0.5f, glm::vec3(2.0f, 3.0f, 5.0f)); // use to compare orthographic and perspective projection
-		model = glm::scale(model, glm::vec3(1.0f, 1.5f, 1.5f));
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-		//Cubo agregado
+		//Cubo E
 		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(-2.0f, -1.5f, 2.0f));
-		model = glm::rotate(model, 3.14f, glm::vec3(1.0f, 0.0f, 0.5f));
+		model = glm::translate(model, glm::vec3(1.8f, 0.0f, 0.0f));
+		model = glm::rotate(model, 0.08f, glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::rotate(model, 0.45f, glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(0.8f, 0.8f, 0.8f));
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+		//Cubo S
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(0.85f, 0.9f, 0.0f));
+		model = glm::rotate(model, 1.54f, glm::vec3(1.0f, 1.0f, 1.0f));
+		model = glm::rotate(model, 0.78f, glm::vec3(0.0f, 0.0f, 1.0f));
+		model = glm::scale(model, glm::vec3(0.7f, 0.7f, 0.7f));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 		glBindVertexArray(0);
-
-		
-
+		glBindVertexArray(0);
 		// Swap the screen buffers
 		glfwSwapBuffers(window);
 	
