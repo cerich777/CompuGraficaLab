@@ -1,6 +1,6 @@
-//Previo 4
+//Practica 4
 //Sánchez Luján César Ricardo
-//Fecha de entrega: 8 de septiembre del 2026
+//Fecha de entrega: 13 de septiembre del 2026
 //No. de Cuenta: 321195414
 
 
@@ -88,47 +88,47 @@ int main() {
 
 	// use with Perspective Projection
 	float vertices[] = {
-		-0.5f, -0.5f, 0.5f, 1.0f, 0.0f,0.0f,//Front
-		0.5f, -0.5f, 0.5f,  1.0f, 0.0f,0.0f,
-		0.5f,  0.5f, 0.5f,  1.0f, 0.0f,0.0f,
-		0.5f,  0.5f, 0.5f,  1.0f, 0.0f,0.0f,
-		-0.5f,  0.5f, 0.5f, 1.0f, 0.0f,0.0f,
-		-0.5f, -0.5f, 0.5f, 1.0f, 0.0f,0.0f,
+		-0.5f, -0.5f, 0.5f, 0.875f, 0.49f,0.196f,//Front
+		0.5f, -0.5f, 0.5f,  0.875f, 0.49f,0.196f,
+		0.5f,  0.5f, 0.5f,  0.875f, 0.49f,0.196f,
+		0.5f,  0.5f, 0.5f,  0.875f, 0.49f,0.196f,
+		-0.5f,  0.5f, 0.5f, 0.875f, 0.49f,0.196f,
+		-0.5f, -0.5f, 0.5f, 0.875f, 0.49f,0.196f,
 		
-	    -0.5f, -0.5f,-0.5f, 0.0f, 1.0f,0.0f,//Back
-		 0.5f, -0.5f,-0.5f, 0.0f, 1.0f,0.0f,
-		 0.5f,  0.5f,-0.5f, 0.0f, 1.0f,0.0f,
-		 0.5f,  0.5f,-0.5f, 0.0f, 1.0f,0.0f,
-	    -0.5f,  0.5f,-0.5f, 0.0f, 1.0f,0.0f,
-	    -0.5f, -0.5f,-0.5f, 0.0f, 1.0f,0.0f,
+	    -0.5f, -0.5f,-0.5f, 0.875f, 0.49f,0.196f,//Back
+		 0.5f, -0.5f,-0.5f, 0.875f, 0.49f,0.196f,
+		 0.5f,  0.5f,-0.5f, 0.875f, 0.49f,0.196f,
+		 0.5f,  0.5f,-0.5f, 0.875f, 0.49f,0.196f,
+	    -0.5f,  0.5f,-0.5f, 0.875f, 0.49f,0.196f,
+	    -0.5f, -0.5f,-0.5f, 0.875f, 0.49f,0.196f,
 		
-		 0.5f, -0.5f,  0.5f,  0.0f, 0.0f,1.0f,
-		 0.5f, -0.5f, -0.5f,  0.0f, 0.0f,1.0f,
-		 0.5f,  0.5f, -0.5f,  0.0f, 0.0f,1.0f,
-		 0.5f,  0.5f, -0.5f,  0.0f, 0.0f,1.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f, 0.0f,1.0f,
-		 0.5f,  -0.5f, 0.5f, 0.0f, 0.0f,1.0f,
+		 0.5f, -0.5f,  0.5f,  0.875f, 0.49f,0.196f,
+		 0.5f, -0.5f, -0.5f,  0.875f, 0.49f,0.196f,
+		 0.5f,  0.5f, -0.5f,  0.875f, 0.49f,0.196f,
+		 0.5f,  0.5f, -0.5f,  0.875f, 0.49f,0.196f,
+		 0.5f,  0.5f,  0.5f,  0.875f, 0.49f,0.196f,
+		 0.5f,  -0.5f, 0.5f, 0.875f, 0.49f,0.196f,
       
-		-0.5f,  0.5f,  0.5f,  1.0f, 1.0f,0.0f,
-		-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,0.0f,
-		-0.5f, -0.5f, -0.5f,  1.0f, 1.0f,0.0f,
-		-0.5f, -0.5f, -0.5f,  1.0f, 1.0f,0.0f,
-		-0.5f, -0.5f,  0.5f,  1.0f, 1.0f,0.0f,
-		-0.5f,  0.5f,  0.5f,  1.0f, 1.0f,0.0f,
+		-0.5f,  0.5f,  0.5f,  0.875f, 0.49f,0.196f,
+		-0.5f,  0.5f, -0.5f,  0.875f, 0.49f,0.196f,
+		-0.5f, -0.5f, -0.5f,  0.875f, 0.49f,0.196f,
+		-0.5f, -0.5f, -0.5f,  0.875f, 0.49f,0.196f,
+		-0.5f, -0.5f,  0.5f,  0.875f, 0.49f,0.196f,
+		-0.5f,  0.5f,  0.5f,  0.875f, 0.49f,0.196f,
 		
-		-0.5f, -0.5f, -0.5f, 0.0f, 1.0f,1.0f,
-		0.5f, -0.5f, -0.5f,  0.0f, 1.0f,1.0f,
-		0.5f, -0.5f,  0.5f,  0.0f, 1.0f,1.0f,
-		0.5f, -0.5f,  0.5f,  0.0f, 1.0f,1.0f,
-		-0.5f, -0.5f,  0.5f, 0.0f, 1.0f,1.0f,
-		-0.5f, -0.5f, -0.5f, 0.0f, 1.0f,1.0f,
+		-0.5f, -0.5f, -0.5f, 0.875f, 0.49f,0.196f,
+		0.5f, -0.5f, -0.5f,  0.875f, 0.49f,0.196f,
+		0.5f, -0.5f,  0.5f,  0.875f, 0.49f,0.196f,
+		0.5f, -0.5f,  0.5f,  0.875f, 0.49f,0.196f,
+		-0.5f, -0.5f,  0.5f, 0.875f, 0.49f,0.196f,
+		-0.5f, -0.5f, -0.5f, 0.875f, 0.49f,0.196f,
 		
-		-0.5f,  0.5f, -0.5f, 1.0f, 0.2f,0.5f,
-		0.5f,  0.5f, -0.5f,  1.0f, 0.2f,0.5f,
-		0.5f,  0.5f,  0.5f,  1.0f, 0.2f,0.5f,
-		0.5f,  0.5f,  0.5f,  1.0f, 0.2f,0.5f,
-		-0.5f,  0.5f,  0.5f, 1.0f, 0.2f,0.5f,
-		-0.5f,  0.5f, -0.5f, 1.0f, 0.2f,0.5f,
+		-0.5f,  0.5f, -0.5f, 0.875f, 0.49f,0.196f,
+		0.5f,  0.5f, -0.5f,  0.875f, 0.49f,0.196f,
+		0.5f,  0.5f,  0.5f,  0.875f, 0.49f,0.196f,
+		0.5f,  0.5f,  0.5f,  0.875f, 0.49f,0.196f,
+		-0.5f,  0.5f,  0.5f, 0.875f, 0.49f,0.196f,
+		-0.5f,  0.5f, -0.5f, 0.875f, 0.49f,0.196f,
 	};
 
 
@@ -194,46 +194,39 @@ int main() {
 		GLint modelLoc = glGetUniformLocation(ourShader.Program, "model");
 		GLint viewLoc = glGetUniformLocation(ourShader.Program, "view");
 		GLint projecLoc = glGetUniformLocation(ourShader.Program, "projection");
+		//GLint colorLoc = glGetUniformLocation(ourShader.Program, "color");
 
 
 		glUniformMatrix4fv(projecLoc, 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 	
-
+		//Cabeza
 		glBindVertexArray(VAO);
 	
 	    model = glm::mat4(1.0f);
-		model = glm::scale(model, glm::vec3(3.0f, 0.1f, 2.0f)); 
+		model = glm::scale(model, glm::vec3(0.4f, 0.2f, 0.8f)); 
 		model = glm::translate(model, glm::vec3(0.0f, 0.6f, 0.0f));
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
-		//Pata 1
+
 		model = glm::mat4(1.0f);
-		model = glm::scale(model, glm::vec3(0.15f, 0.8f, 0.15f));
-		model = glm::translate(model, glm::vec3(4.9f, -0.5f, 3.9f));
+		model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.4f));
+		model = glm::translate(model, glm::vec3(-0.6f, 0.6f, 0.0f));
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
-		
-		//Pata 2
+
 		model = glm::mat4(1.0f);
-		model = glm::scale(model, glm::vec3(0.15f, 0.8f, 0.15f));
-		model = glm::translate(model, glm::vec3(-4.9f, -0.5f, 3.9f));
+		model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.4f));
+		model = glm::translate(model, glm::vec3(-0.6f, 0.6f, 0.0f));
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
-		
-		//Pata 3
+
+
 		model = glm::mat4(1.0f);
-		model = glm::scale(model, glm::vec3(0.15f, 0.8f, 0.15f));
-		model = glm::translate(model, glm::vec3(4.9f, -0.5f, -3.9f));
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-		
-		//Pata 4
-		model = glm::mat4(1.0f);
-		model = glm::scale(model, glm::vec3(0.15f, 0.8f, 0.15f));
-		model = glm::translate(model, glm::vec3(-4.9f, -0.5f, -3.9f));
+		model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
+		model = glm::translate(model, glm::vec3(0.3f, 0.2f, 0.4f));
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
