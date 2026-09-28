@@ -1,6 +1,6 @@
-//Previo 6
+//Práctica 6
 //Sánchez Luján César Ricardo
-//Fecha de entrega:22 de septiembre del 2026
+//Fecha de entrega:27 de septiembre del 2026
 //No. Cuenta: 321195414
 
 
@@ -60,7 +60,7 @@ int main( )
     glfwWindowHint( GLFW_RESIZABLE, GL_FALSE );
     
     // Create a GLFWwindow object that we can use for GLFW's functions
-    GLFWwindow *window = glfwCreateWindow( WIDTH, HEIGHT, "Previo 6 Cesar Sanchez", nullptr, nullptr );
+    GLFWwindow *window = glfwCreateWindow( WIDTH, HEIGHT, "Práctica 6 Cesar Sanchez", nullptr, nullptr );
     
     if ( nullptr == window )
     {
@@ -100,8 +100,11 @@ int main( )
     Shader shader( "Shader/modelLoading.vs", "Shader/modelLoading.frag" );
     
     // Load models
-    Model dog((char*)"Models/RedDog.obj");
-    Model dog2((char*)"Models/french_bulldog.obj");
+    //Model dog((char*)"Models/RedDog.obj");
+    //Model dog2((char*)"Models/french_bulldog.obj");
+    //Model ball((char*)"Models/Cafusa_Base_Mesh.obj");
+    //Model coca((char*)"Models/colaglass.obj");
+    Model modelCompleto((char*)"Models/P6FINAL.obj");
     glm::mat4 projection = glm::perspective( camera.GetZoom( ), ( float )SCREEN_WIDTH/( float )SCREEN_HEIGHT, 0.1f, 100.0f );
     
   
@@ -130,14 +133,20 @@ int main( )
 
         // Draw the loaded model
         glm::mat4 model(1);
-        glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model));
+        /*glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model));
         dog.Draw(shader);
 
         model = glm::translate(model, glm::vec3(2.0f, 0.0f, 2.0f));
-        model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
+        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
         glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model));
-        dog2.Draw(shader);
+        ball.Draw(shader);*/
+        //dog2.Draw(shader);
 
+
+       /* model = glm::translate(model, glm::vec3(-2.0f, 0.0f, 2.0f));
+        model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));*/
+        glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model));
+        modelCompleto.Draw(shader);
         
 
 
