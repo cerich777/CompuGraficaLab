@@ -50,7 +50,7 @@ glm::vec3 lunaPos(0.0f, 0.0f, 0.0f);
 float radio = 4.2f;
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
-float rot = 90.0f;
+float rot = 60.0f;
 
 int main()
 {
@@ -166,7 +166,6 @@ int main()
         glUniform3f(glGetUniformLocation(lightingShader.Program, "material.diffuse"), 1.0f, 1.0f, 1.0f);
         glUniform3f(glGetUniformLocation(lightingShader.Program, "material.specular"), 0.2f, 0.2f, 0.2f);
         glUniform1f(glGetUniformLocation(lightingShader.Program, "material.shininess"), 16.0f);
-        // Model.h carga la textura difusa en la unidad 0.
         glUniform1i(glGetUniformLocation(lightingShader.Program, "texture_diffusse"), 0);
 
         // Draw the loaded model
@@ -180,15 +179,18 @@ int main()
         glUniformMatrix4fv(glGetUniformLocation(shader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
         glUniformMatrix4fv(glGetUniformLocation(shader.Program, "view"), 1, GL_FALSE, glm::value_ptr(view));
 
+        glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model));
+        escenario.Draw(shader);
+
         model = glm::mat4(1.0f);
         model = glm::translate(model, solPos);
-        model = glm::scale(model, glm::vec3(1.9f));
+        model = glm::scale(model, glm::vec3(4.5f));
         glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model));
         sol.Draw(shader);
 
         model = glm::mat4(1.0f);
         model = glm::translate(model, lunaPos);
-        model = glm::scale(model, glm::vec3(1.3f));
+        model = glm::scale(model, glm::vec3(3.8f));
         glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model));
         luna.Draw(shader);
 
