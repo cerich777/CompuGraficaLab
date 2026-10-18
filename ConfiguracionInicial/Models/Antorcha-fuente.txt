@@ -1,0 +1,6 @@
+Modelo y textura de antorcha de Minecraft (Mojang/Microsoft), obtenidos del espejo publico:
+https://github.com/InventivetalentDev/minecraft-assets/tree/1.21.4
+Modelo original: assets/minecraft/models/block/template_torch.json
+Textura original: assets/minecraft/textures/block/torch.png
+Se convirtio la geometria JSON a OBJ para esta practica educativa y se amplio la textura con vecino mas cercano.
+Los recursos originales conservan los derechos de sus titulares.

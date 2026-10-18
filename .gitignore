@@ -399,3 +399,6 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# Include Wavefront models; compiled object files remain ignored.
+!/ConfiguracionInicial/Models/**/*.[oO][bB][jJ]

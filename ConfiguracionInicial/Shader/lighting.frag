@@ -1,6 +1,6 @@
 #version 330 core
 
-#define NUMBER_OF_POINT_LIGHTS 4
+#define NUMBER_OF_POINT_LIGHTS 1
 
 struct Material
 {
@@ -55,8 +55,12 @@ out vec4 color;
 
 uniform vec3 viewPos;
 uniform DirLight dirLight;
+uniform DirLight dirLightLuna;
 uniform PointLight pointLights[NUMBER_OF_POINT_LIGHTS];
 uniform SpotLight spotLight;
+uniform SpotLight spotLightLampara;
+uniform int esLampara;
+uniform sampler2D texturaEmisionLampara;
 uniform Material material;
 uniform int transparency;
 
@@ -65,28 +69,30 @@ vec3 CalcDirLight( DirLight light, vec3 normal, vec3 viewDir );
 vec3 CalcPointLight( PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir );
 vec3 CalcSpotLight( SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir );
 
-void main( )
+void main()
 {
-    // Properties
-    vec3 norm = normalize( Normal );
-    vec3 viewDir = normalize( viewPos - FragPos );
-    
-    // Directional lighting
-    vec3 result = CalcDirLight( dirLight, norm, viewDir );
-    
-    // Point lights
-    for ( int i = 0; i < NUMBER_OF_POINT_LIGHTS; i++ )
-    {
-        result += CalcPointLight( pointLights[i], norm, FragPos, viewDir );
-    }
-    
-    // Spot light
-    result += CalcSpotLight( spotLight, norm, FragPos, viewDir );
- 	
-    color = vec4( result,texture(material.diffuse, TexCoords).rgb );
-	  if(color.a < 0.1 && transparency==1)
-        discard;
+    vec3 norm = normalize(Normal);
+    vec3 viewDir = normalize(viewPos - FragPos);
 
+    // Luz direccional.
+    vec3 result = CalcDirLight(dirLight, norm, viewDir);
+    // Sumar la luz direccional de la Luna.
+    result += CalcDirLight(dirLightLuna, norm, viewDir);
+    // Sumar la linterna de la camara.
+    result += CalcSpotLight(spotLight, norm, FragPos, viewDir);
+
+    // Unica luz puntual: antorcha.
+    result += CalcPointLight(pointLights[0], norm, FragPos, viewDir);
+
+    // Segundo reflector: lampara fija del escenario.
+    result += CalcSpotLight(spotLightLampara, norm, FragPos, viewDir);
+    if (esLampara == 1)
+        result += texture(texturaEmisionLampara, TexCoords).rgb * 1.5;
+
+    color = vec4(result, texture(material.diffuse, TexCoords).a);
+
+    if (color.a < 0.1 && transparency == 1)
+        discard;
 }
 
 // Calculates the color when using a directional light.

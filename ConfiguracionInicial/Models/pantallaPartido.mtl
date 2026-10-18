@@ -1,0 +1,15 @@
+newmtl Madera
+Ka 1 1 1
+Kd 1 1 1
+Ks .1 .1 .1
+d 1
+illum 2
+map_Kd banco_Madera.png
+
+newmtl Metal
+Ka 1 1 1
+Kd 1 1 1
+Ks .3 .3 .3
+d 1
+illum 2
+map_Kd parque_Metal.png
