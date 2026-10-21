@@ -1,6 +1,6 @@
-//Previo 10
+//Práctica 10
 //Sánchez Luján Cesar Ricardo
-//Fecha de entrega: 20 de octubre
+//Fecha de entrega: 25 de octubre
 //No de cuenta: 321195414
 
 #include <iostream>
@@ -105,12 +105,22 @@ float vertices[] = {
 
 glm::vec3 Light1 = glm::vec3(0);
 //Anim
-float alturaPelota = 0.0f; // Desplazamiento desde la nariz
-float velocidadPelota = 1.0f; // Unidades por segundo
-const float alturaMinima = 0.0f;
-const float alturaMaxima = pointLightPositions[0].y - 0.31f; // Centro original de ball.obj: Y = 0.31
-bool subiendo = true;
+float radioOrbita = 1.8f;
+float anguloPelota = 180.0f; 
+float velocidadPelota = 40.0f;
 bool AnimBall = false;
+float velocidadGolpe = 2.0f;
+float anguloPerro = 0.0f;
+
+float velocidadPerro = 40.0f;
+bool AnimDog = false;
+
+// Salto del perro con la tecla B
+float alturaSalto = 0.0f;
+float velocidadVertical = 0.0f;
+float fuerzaSalto = 2.0f; // Velocidad inicial hacia arriba
+float gravedad = 3.5f;
+bool saltando = false;
 
 
 // Deltatime
@@ -129,7 +139,7 @@ int main()
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);*/
 
 	// Create a GLFWwindow object that we can use for GLFW's functions
-	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Previo 10 Cesar Sanchez", nullptr, nullptr);
+	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Practica 10 Cesar Sanchez", nullptr, nullptr);
 
 	if (nullptr == window)
 	{
@@ -295,6 +305,11 @@ int main()
 		Piso.Draw(lightingShader);
 
 		model = glm::mat4(1);
+		model = glm::translate(model, glm::vec3(
+			radioOrbita * cos(glm::radians(anguloPerro)),
+			alturaSalto,
+			radioOrbita * sin(glm::radians(anguloPerro))));
+		model = glm::rotate(model, glm::radians(-anguloPerro), glm::vec3(0.0f, 1.0f, 0.0f));
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 		glUniform1i(glGetUniformLocation(lightingShader.Program, "transparency"), 0);
 		Dog.Draw(lightingShader);
@@ -304,7 +319,10 @@ int main()
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 		glUniform1i(glGetUniformLocation(lightingShader.Program, "transparency"), 1);
-		model = glm::translate(model, glm::vec3(0.0f, alturaPelota, 0.0f));
+		model = glm::translate(model, glm::vec3(
+			radioOrbita * cos(glm::radians(anguloPelota)) + 0.0009f,
+			1.2f,
+			radioOrbita * sin(glm::radians(anguloPelota)) - 0.4702f));
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 	    Ball.Draw(lightingShader); 
 		glDisable(GL_BLEND);  //Desactiva el canal alfa 
@@ -445,6 +463,15 @@ void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mode
 			Light1 = glm::vec3(0);//Cuado es solo un valor en los 3 vectores pueden dejar solo una componente
 		}
 	}
+	if (key == GLFW_KEY_B && action == GLFW_PRESS && !saltando)
+	{
+		saltando = true;
+		velocidadVertical = fuerzaSalto;
+	}
+	if (key == GLFW_KEY_M && action == GLFW_PRESS)
+	{
+		AnimDog = !AnimDog;
+	}
 	if (key == GLFW_KEY_N && action == GLFW_PRESS)
 	{
 		AnimBall = !AnimBall;
@@ -452,29 +479,37 @@ void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mode
 	}
 }
 void Animation() {
+	if (saltando)
+	{
+		alturaSalto += velocidadVertical * deltaTime - 0.5f * gravedad * deltaTime * deltaTime;
+		velocidadVertical -= gravedad * deltaTime;
+		if (alturaSalto <= 0.0f)
+		{
+			alturaSalto = 0.0f;
+			velocidadVertical = 0.0f;
+			saltando = false;
+		}
+	}
+
+	if (AnimDog)
+	{
+		anguloPerro += velocidadPerro * deltaTime;
+		if (anguloPerro >= 360.0f)
+		{
+			anguloPerro = fmod(anguloPerro, 360.0f);
+		}
+	}
+
 	if (AnimBall)
 	{
-		if (subiendo)
+		// Resta el angulo para recorrer la circunferencia en sentido contrario al perro
+		anguloPelota -= velocidadPelota * deltaTime;
+		if (anguloPelota < 0.0f)
 		{
-			alturaPelota += velocidadPelota * deltaTime;
-		}
-		else
-		{
-			alturaPelota -= velocidadPelota * deltaTime;
+			anguloPelota = fmod(anguloPelota, 360.0f) + 360.0f;
 		}
 
-		if (alturaPelota >= alturaMaxima)
-		{
-			alturaPelota = alturaMaxima;
-			subiendo = false;
-		}
-		else if (alturaPelota <= alturaMinima)
-		{
-			alturaPelota = alturaMinima;
-			subiendo = true;
-		}
-
-		printf("Altura: %f\n", 0.31f + alturaPelota);
+		printf("Angulo pelota: %f\n", anguloPelota);
 	}
 }
 
