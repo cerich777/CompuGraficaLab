@@ -107,20 +107,33 @@ glm::vec3 Light1 = glm::vec3(0);
 //Anim
 float radioOrbita = 1.8f;
 float anguloPelota = 180.0f; 
-float velocidadPelota = 40.0f;
-bool AnimBall = false;
-float velocidadGolpe = 2.0f;
+float velocidadPelota = 60.0f;
+bool AnimBall = true;
+float velocidadGolpe = 2.2f;
+float alturaBasePelota = 0.45f;
+float alturaExtraPelota = 0.0f;
+float velocidadVerticalPelota = 0.0f;
+float gravedadCaidaPelota = 0.72f; // Menor valor: la pelota baja mas despacio
+bool golpeEnEsteSalto = false;
 float anguloPerro = 0.0f;
 
-float velocidadPerro = 40.0f;
-bool AnimDog = false;
-
-// Salto del perro con la tecla B
+float velocidadPerro = 120.0f;
+bool AnimDog = true;
+float escalaPerro = 1.0f;
+float anchoPerro = 1.0f;
+bool preparandoSalto = false;
+float tiempoPreparacion = 0.0f;
+float duracionPreparacion = 0.12f;
+float tiempoSalto = 0.0f;
+float compresionSalto = 0.15f; 
 float alturaSalto = 0.0f;
 float velocidadVertical = 0.0f;
-float fuerzaSalto = 2.0f; // Velocidad inicial hacia arriba
+float fuerzaSalto = 2.0f;
 float gravedad = 3.5f;
 bool saltando = false;
+float distanciaSalto = 2.2f;
+float distanciaAnterior = 0.0f;
+bool saltoDisponible = true;
 
 
 // Deltatime
@@ -310,6 +323,9 @@ int main()
 			alturaSalto,
 			radioOrbita * sin(glm::radians(anguloPerro))));
 		model = glm::rotate(model, glm::radians(-anguloPerro), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::translate(model, glm::vec3(0.0f, -0.38f, 0.0f));
+		model = glm::scale(model, glm::vec3(anchoPerro, escalaPerro, anchoPerro));
+		model = glm::translate(model, glm::vec3(0.0f, 0.38f, 0.0f));
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 		glUniform1i(glGetUniformLocation(lightingShader.Program, "transparency"), 0);
 		Dog.Draw(lightingShader);
@@ -321,7 +337,7 @@ int main()
 		glUniform1i(glGetUniformLocation(lightingShader.Program, "transparency"), 1);
 		model = glm::translate(model, glm::vec3(
 			radioOrbita * cos(glm::radians(anguloPelota)) + 0.0009f,
-			1.2f,
+			alturaBasePelota + alturaExtraPelota,
 			radioOrbita * sin(glm::radians(anguloPelota)) - 0.4702f));
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 	    Ball.Draw(lightingShader); 
@@ -463,10 +479,10 @@ void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mode
 			Light1 = glm::vec3(0);//Cuado es solo un valor en los 3 vectores pueden dejar solo una componente
 		}
 	}
-	if (key == GLFW_KEY_B && action == GLFW_PRESS && !saltando)
+	if (key == GLFW_KEY_B && action == GLFW_PRESS && !saltando && !preparandoSalto)
 	{
-		saltando = true;
-		velocidadVertical = fuerzaSalto;
+		preparandoSalto = true;
+		tiempoPreparacion = 0.0f;
 	}
 	if (key == GLFW_KEY_M && action == GLFW_PRESS)
 	{
@@ -479,8 +495,66 @@ void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mode
 	}
 }
 void Animation() {
+	if (alturaExtraPelota > 0.0f || velocidadVerticalPelota > 0.0f)
+	{
+		if (velocidadVerticalPelota > 0.0f && velocidadVerticalPelota < gravedad * deltaTime)
+		{
+			float tiempoCaida = deltaTime - velocidadVerticalPelota / gravedad;
+			alturaExtraPelota += velocidadVerticalPelota * velocidadVerticalPelota / (2.0f * gravedad)
+				- 0.5f * gravedadCaidaPelota * tiempoCaida * tiempoCaida;
+			velocidadVerticalPelota = -gravedadCaidaPelota * tiempoCaida;
+		}
+		else
+		{
+			float gravedadPelota = gravedad;
+			if (velocidadVerticalPelota <= 0.0f)
+			{
+				gravedadPelota = gravedadCaidaPelota;
+			}
+			alturaExtraPelota += velocidadVerticalPelota * deltaTime - 0.5f * gravedadPelota * deltaTime * deltaTime;
+			velocidadVerticalPelota -= gravedadPelota * deltaTime;
+		}
+		if (alturaExtraPelota <= 0.0f)
+		{
+			alturaExtraPelota = 0.0f;
+			velocidadVerticalPelota = 0.0f;
+		}
+	}
+
+	glm::vec3 posicionPerro(
+		radioOrbita * cos(glm::radians(anguloPerro)), 0.0f,
+		radioOrbita * sin(glm::radians(anguloPerro)));
+	glm::vec3 posicionPelota(
+		radioOrbita * cos(glm::radians(anguloPelota)), 0.0f,
+		radioOrbita * sin(glm::radians(anguloPelota)));
+	float distancia = glm::length(posicionPelota - posicionPerro);
+
+	if (distancia > distanciaSalto + 0.3f)
+	{
+		saltoDisponible = true;
+	}
+	if (!saltando && !preparandoSalto && saltoDisponible && distancia <= distanciaSalto && distancia < distanciaAnterior)
+	{
+		preparandoSalto = true;
+		tiempoPreparacion = 0.0f;
+		saltoDisponible = false;
+	}
+	distanciaAnterior = distancia;
+	if (preparandoSalto)
+	{
+		tiempoPreparacion += deltaTime;
+		if (tiempoPreparacion >= duracionPreparacion)
+		{
+			preparandoSalto = false;
+			saltando = true;
+			velocidadVertical = fuerzaSalto;
+			tiempoSalto = 0.0f;
+		}
+	}
+
 	if (saltando)
 	{
+		tiempoSalto += deltaTime;
 		alturaSalto += velocidadVertical * deltaTime - 0.5f * gravedad * deltaTime * deltaTime;
 		velocidadVertical -= gravedad * deltaTime;
 		if (alturaSalto <= 0.0f)
@@ -489,6 +563,32 @@ void Animation() {
 			velocidadVertical = 0.0f;
 			saltando = false;
 		}
+	}
+	float deformacion = 0.0f;
+	if (preparandoSalto)
+	{
+		deformacion = glm::clamp(tiempoPreparacion / duracionPreparacion, 0.0f, 1.0f);
+	}
+	else if (saltando)
+	{
+		deformacion = exp(-tiempoSalto / duracionPreparacion);
+	}
+	escalaPerro = 1.0f - compresionSalto * deformacion;
+	anchoPerro = 1.0f + compresionSalto * deformacion / 3.0f;
+
+	glm::vec3 posicionCabeza = posicionPerro + glm::vec3(-0.30f * anchoPerro * sin(glm::radians(anguloPerro)),-0.38f + 0.58f * escalaPerro + alturaSalto,0.30f * anchoPerro * cos(glm::radians(anguloPerro)));
+	glm::vec3 centroPelota = posicionPelota + glm::vec3(0.0f, 0.31245f + alturaBasePelota + alturaExtraPelota, 0.0f);
+
+	if (!saltando)
+	{
+		golpeEnEsteSalto = false;
+	}
+	if (saltando && !golpeEnEsteSalto && velocidadVerticalPelota <= 0.0f &&
+		glm::length(centroPelota - posicionCabeza) <= 0.28f)
+	{
+		
+		velocidadVerticalPelota = glm::max(0.5f, velocidadGolpe - alturaExtraPelota * 0.5f);
+		golpeEnEsteSalto = true;
 	}
 
 	if (AnimDog)
@@ -502,7 +602,6 @@ void Animation() {
 
 	if (AnimBall)
 	{
-		// Resta el angulo para recorrer la circunferencia en sentido contrario al perro
 		anguloPelota -= velocidadPelota * deltaTime;
 		if (anguloPelota < 0.0f)
 		{
