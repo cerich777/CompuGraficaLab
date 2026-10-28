@@ -1,6 +1,6 @@
-//Previo 11
+//Practica 11
 //Sánchez Luján César Ricardo
-//Fecha de entrega: 26 de octubre del 2026
+//Fecha de entrega: 1 de noviembre del 2026
 //No de cuenta:321195414
 
 #include <iostream>
@@ -117,7 +117,8 @@ float tail = 0.0f;
 glm::vec3 dogPos (0.0f,0.0f,0.0f);
 float dogRot = 0.0f;
 bool step = false;
-float limitePiso = 2.3f;
+float limitePiso = 2.0f;
+float limiteGiro = 90.0f;
 
 
 
@@ -137,7 +138,7 @@ int main()
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);*/
 
 	// Create a GLFWwindow object that we can use for GLFW's functions
-	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Previo 11 Cesar Sanchez", nullptr, nullptr);
+	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Practica 11 Cesar Sanchez", nullptr, nullptr);
 
 	if (nullptr == window)
 	{
@@ -513,73 +514,129 @@ void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mode
 	}
 	
 }
-void Animation() {
+void Animation()
+{
 	if (AnimBall)
 	{
 		rotBall += 0.4f;
-		//printf("%f", rotBall);
 	}
-	
 	if (AnimDog)
 	{
 		rotDog -= 0.6f;
-		//printf("%f", rotBall);
 	}
-	if (dogAnim == 1) {
-		if (!step) {
-			RLegs += 0.03f;
-			FLegs += 0.03;
-			head += 0.03f;
-			tail += 0.03f;
-			if (RLegs > 15.0f)
-				step = true;
-		}
-		else
+		if (dogAnim == 1 || dogAnim == 2)
 		{
-			RLegs -= 0.03f;
-			FLegs -= 0.03;
-			head -= 0.03f;
-			tail -= 0.03f;
-			if (RLegs<-15.0f)
-				step = false;
-		}
-		dogPos.z += 0.0002;
-		if (dogPos.z >= limitePiso)
-		{
-			dogPos.z = limitePiso;
-			dogAnim = 2;
-		}
-	}
-	else if (dogAnim == 2)
-	{
-		if (RLegs > 0.03f)
-		{
-			RLegs -= 0.03f;
-			FLegs -= 0.03f;
-			head -= 0.03f;
-			tail -= 0.03f;
-		}
-		else if (RLegs < -0.03f)
+		if (!step)
 		{
 			RLegs += 0.03f;
 			FLegs += 0.03f;
-			head += 0.03f;
 			tail += 0.03f;
+			if (dogAnim == 1)
+			{
+				head += 0.03f;
+			}
+			if (RLegs > 15.0f)
+			{
+				step = true;
+			}
 		}
 		else
 		{
-			RLegs = 0.0f;
-			FLegs = 0.0f;
-			head = 0.0f;
-			tail = 0.0f;
-
-			step = false;
-			dogAnim = 0;
+			RLegs -= 0.03f;
+			FLegs -= 0.03f;
+			tail -= 0.03f;
+			if (dogAnim == 1)
+			{
+				head -= 0.03f;
+			}
+			if (RLegs < -15.0f)
+			{
+				step = false;
+			}
 		}
 	}
-	
-	
-}
+		// ESTADO 1: CAMINAR RECTO
+		if (dogAnim == 1)
+		{
+			dogPos.x += 0.0002f * sin(glm::radians(dogRot));
+			dogPos.z += 0.0002f * cos(glm::radians(dogRot));
+
+			if (dogRot == 0.0f && dogPos.z >= limitePiso)
+			{
+				dogPos.z = limitePiso;
+
+				limiteGiro = 90.0f;
+				dogAnim = 2;
+			}
+			else if (dogRot == 90.0f && dogPos.x >= limitePiso)
+			{
+				dogPos.x = limitePiso;
+
+				limiteGiro = 225.0f;
+				dogAnim = 2;
+			}
+			else if (dogRot == 225.0f &&
+				(dogPos.x <= -limitePiso ||
+					dogPos.z <= -limitePiso))
+			{
+				if (dogPos.x < -limitePiso)
+				{
+					dogPos.x = -limitePiso;
+				}
+
+				if (dogPos.z < -limitePiso)
+				{
+					dogPos.z = -limitePiso;
+				}
+
+				dogAnim = 0;
+			}
+		}
+		// ESTADO 2: GIRAR A LA IZQUIERDA CAMINANDO
+		else if (dogAnim == 2)
+		{
+			dogRot += 0.015f;
+
+			if (dogRot > limiteGiro)
+			{
+				dogRot = limiteGiro;
+			}
+			dogPos.x += 0.00007f * sin(glm::radians(dogRot));
+			dogPos.z += 0.00007f * cos(glm::radians(dogRot));
+			if (dogRot < limiteGiro - 15.0f)
+			{
+				if (head > -25.0f)
+				{
+					head -= 0.03f;
+				}
+
+				if (head < -25.0f)
+				{
+					head = -25.0f;
+				}
+			}
+			else
+			{
+				if (head < -0.03f)
+				{
+					head += 0.03f;
+				}
+				else if (head > 0.03f)
+				{
+					head -= 0.03f;
+				}
+				else
+				{
+					head = 0.0f;
+				}
+			}
+			if (dogRot >= limiteGiro)
+			{
+				head = 0.0f;
+				dogAnim = 1;
+			}
+		}
+	}
 
 void MouseCallback(GLFWwindow *window, double xPos, double yPos)
 {
