@@ -520,21 +520,26 @@ void Animation()
 	{
 		rotBall += 0.4f;
 	}
+
 	if (AnimDog)
 	{
 		rotDog -= 0.6f;
 	}
-		if (dogAnim == 1 || dogAnim == 2)
-		{
+
+	// Mover patas y cola mientras camina o gira
+	if (dogAnim == 1 || dogAnim == 2 || dogAnim == 3)
+	{
 		if (!step)
 		{
 			RLegs += 0.03f;
 			FLegs += 0.03f;
 			tail += 0.03f;
+
 			if (dogAnim == 1)
 			{
 				head += 0.03f;
 			}
+
 			if (RLegs > 15.0f)
 			{
 				step = true;
@@ -545,98 +550,249 @@ void Animation()
 			RLegs -= 0.03f;
 			FLegs -= 0.03f;
 			tail -= 0.03f;
+
 			if (dogAnim == 1)
 			{
 				head -= 0.03f;
 			}
+
 			if (RLegs < -15.0f)
 			{
 				step = false;
 			}
 		}
 	}
-		// ESTADO 1: CAMINAR RECTO
-		if (dogAnim == 1)
+
+	// ESTADO 1: CAMINAR
+	if (dogAnim == 1)
+	{
+		dogPos.x += 0.0002f * sin(glm::radians(dogRot));
+		dogPos.z += 0.0002f * cos(glm::radians(dogRot));
+
+		// Antes de A: comenzar el giro hacia B
+		if (dogRot == 0.0f &&
+			dogPos.z >= limitePiso - 0.5f)
 		{
-			dogPos.x += 0.0002f * sin(glm::radians(dogRot));
-			dogPos.z += 0.0002f * cos(glm::radians(dogRot));
+			limiteGiro = 90.0f;
+			dogAnim = 2;
+		}
 
-			if (dogRot == 0.0f && dogPos.z >= limitePiso)
+		// Antes de B: comenzar el giro hacia C
+		else if (dogRot == 90.0f &&
+			dogPos.z > 0.0f &&
+			dogPos.x >= limitePiso - 0.4f)
+		{
+			limiteGiro = 225.0f;
+			dogAnim = 2;
+		}
+
+		// Antes de C: comenzar el giro hacia D
+		else if (dogRot == 225.0f &&
+			dogPos.z <= -limitePiso + 0.5f)
+		{
+			limiteGiro = 90.0f;
+			dogAnim = 3;
+		}
+
+		// Antes de D: girar a la derecha hacia el punto inicial
+		else if (dogRot == 90.0f &&
+			dogPos.z < 0.0f &&
+			dogPos.x >= limitePiso - 0.2f)
+		{
+			limiteGiro = -60.0f;
+			dogAnim = 3;
+		}
+
+		// Al regresar al centro: realizar el giro final
+		else if (dogRot == -60.0f &&
+			dogPos.x <= 0.0f)
+		{
+			dogPos.x = 0.0f;
+			dogAnim = 4;
+		}
+	}
+
+	// ESTADO 2: GIRAR A LA IZQUIERDA CAMINANDO
+	else if (dogAnim == 2)
+	{
+		dogRot += 0.015f;
+
+		if (dogRot > limiteGiro)
+		{
+			dogRot = limiteGiro;
+		}
+
+		// El giro largo de B hacia C avanza menos
+		float avanceGiro =
+			(limiteGiro == 90.0f) ? 0.00014f : 0.00005f;
+
+		dogPos.x += avanceGiro * sin(glm::radians(dogRot));
+		dogPos.z += avanceGiro * cos(glm::radians(dogRot));
+
+		// Inclinar la cabeza hacia la izquierda
+		if (dogRot < limiteGiro - 15.0f)
+		{
+			if (head > -25.0f)
 			{
-				dogPos.z = limitePiso;
-
-				limiteGiro = 90.0f;
-				dogAnim = 2;
+				head -= 0.03f;
 			}
-			else if (dogRot == 90.0f && dogPos.x >= limitePiso)
+
+			if (head < -25.0f)
 			{
-				dogPos.x = limitePiso;
-
-				limiteGiro = 225.0f;
-				dogAnim = 2;
-			}
-			else if (dogRot == 225.0f &&
-				(dogPos.x <= -limitePiso ||
-					dogPos.z <= -limitePiso))
-			{
-				if (dogPos.x < -limitePiso)
-				{
-					dogPos.x = -limitePiso;
-				}
-
-				if (dogPos.z < -limitePiso)
-				{
-					dogPos.z = -limitePiso;
-				}
-
-				dogAnim = 0;
+				head = -25.0f;
 			}
 		}
-		// ESTADO 2: GIRAR A LA IZQUIERDA CAMINANDO
-		else if (dogAnim == 2)
+		// Enderezar la cabeza al terminar el giro
+		else
 		{
-			dogRot += 0.015f;
-
-			if (dogRot > limiteGiro)
+			if (head < -0.03f)
 			{
-				dogRot = limiteGiro;
+				head += 0.03f;
 			}
-			dogPos.x += 0.00007f * sin(glm::radians(dogRot));
-			dogPos.z += 0.00007f * cos(glm::radians(dogRot));
-			if (dogRot < limiteGiro - 15.0f)
+			else if (head > 0.03f)
 			{
-				if (head > -25.0f)
-				{
-					head -= 0.03f;
-				}
-
-				if (head < -25.0f)
-				{
-					head = -25.0f;
-				}
+				head -= 0.03f;
 			}
 			else
 			{
-				if (head < -0.03f)
-				{
-					head += 0.03f;
-				}
-				else if (head > 0.03f)
-				{
-					head -= 0.03f;
-				}
-				else
-				{
-					head = 0.0f;
-				}
-			}
-			if (dogRot >= limiteGiro)
-			{
 				head = 0.0f;
-				dogAnim = 1;
 			}
 		}
+
+		if (dogRot >= limiteGiro)
+		{
+			head = 0.0f;
+			dogAnim = 1;
+		}
 	}
+
+	// ESTADO 3: GIRAR A LA DERECHA CAMINANDO
+	else if (dogAnim == 3)
+	{
+		dogRot -= 0.015f;
+
+		if (dogRot < limiteGiro)
+		{
+			dogRot = limiteGiro;
+		}
+
+		dogPos.x += 0.00009f * sin(glm::radians(dogRot));
+		dogPos.z += 0.00009f * cos(glm::radians(dogRot));
+
+		// Inclinar la cabeza hacia la derecha
+		if (dogRot > limiteGiro + 15.0f)
+		{
+			if (head < 25.0f)
+			{
+				head += 0.03f;
+			}
+
+			if (head > 25.0f)
+			{
+				head = 25.0f;
+			}
+		}
+		// Enderezar la cabeza al terminar el giro
+		else
+		{
+			if (head > 0.03f)
+			{
+				head -= 0.03f;
+			}
+			else if (head < -0.03f)
+			{
+				head += 0.03f;
+			}
+			else
+			{
+				head = 0.0f;
+			}
+		}
+
+		if (dogRot <= limiteGiro)
+		{
+			dogRot = limiteGiro;
+			head = 0.0f;
+			dogAnim = 1;
+		}
+	}
+
+	// ESTADO 4: GIRO FINAL Y REGRESO AL REPOSO
+	else if (dogAnim == 4)
+	{
+		dogRot += 0.015f;
+
+		if (dogRot > 0.0f)
+		{
+			dogRot = 0.0f;
+		}
+
+		// Avanzar ligeramente mientras da la última vuelta
+		dogPos.x += 0.00004f * sin(glm::radians(dogRot));
+		dogPos.z += 0.00004f * cos(glm::radians(dogRot));
+
+		// Acomodar patas y cola
+		if (RLegs > 0.03f)
+		{
+			RLegs -= 0.03f;
+			FLegs -= 0.03f;
+			tail -= 0.03f;
+		}
+		else if (RLegs < -0.03f)
+		{
+			RLegs += 0.03f;
+			FLegs += 0.03f;
+			tail += 0.03f;
+		}
+		else
+		{
+			RLegs = 0.0f;
+			FLegs = 0.0f;
+			tail = 0.0f;
+		}
+
+		// Inclinar la cabeza hacia la izquierda
+		if (dogRot < -15.0f)
+		{
+			if (head > -20.0f)
+			{
+				head -= 0.03f;
+			}
+
+			if (head < -20.0f)
+			{
+				head = -20.0f;
+			}
+		}
+		// Enderezarla al terminar
+		else
+		{
+			if (head < -0.03f)
+			{
+				head += 0.03f;
+			}
+			else if (head > 0.03f)
+			{
+				head -= 0.03f;
+			}
+			else
+			{
+				head = 0.0f;
+			}
+		}
+
+		if (dogRot >= 0.0f)
+		{
+			dogRot = 0.0f;
+			RLegs = 0.0f;
+			FLegs = 0.0f;
+			head = 0.0f;
+			tail = 0.0f;
+			step = false;
+			dogAnim = 0;
+		}
+	}
+}
 
 void MouseCallback(GLFWwindow *window, double xPos, double yPos)
 {
