@@ -525,8 +525,6 @@ void Animation()
 	{
 		rotDog -= 0.6f;
 	}
-
-	// Mover patas y cola mientras camina o gira
 	if (dogAnim == 1 || dogAnim == 2 || dogAnim == 3)
 	{
 		if (!step)
@@ -568,16 +566,12 @@ void Animation()
 	{
 		dogPos.x += 0.0002f * sin(glm::radians(dogRot));
 		dogPos.z += 0.0002f * cos(glm::radians(dogRot));
-
-		// Antes de A: comenzar el giro hacia B
 		if (dogRot == 0.0f &&
 			dogPos.z >= limitePiso - 0.5f)
 		{
 			limiteGiro = 90.0f;
 			dogAnim = 2;
 		}
-
-		// Antes de B: comenzar el giro hacia C
 		else if (dogRot == 90.0f &&
 			dogPos.z > 0.0f &&
 			dogPos.x >= limitePiso - 0.4f)
@@ -585,16 +579,12 @@ void Animation()
 			limiteGiro = 225.0f;
 			dogAnim = 2;
 		}
-
-		// Antes de C: comenzar el giro hacia D
 		else if (dogRot == 225.0f &&
 			dogPos.z <= -limitePiso + 0.5f)
 		{
 			limiteGiro = 90.0f;
 			dogAnim = 3;
 		}
-
-		// Antes de D: girar a la derecha hacia el punto inicial
 		else if (dogRot == 90.0f &&
 			dogPos.z < 0.0f &&
 			dogPos.x >= limitePiso - 0.2f)
@@ -602,8 +592,6 @@ void Animation()
 			limiteGiro = -60.0f;
 			dogAnim = 3;
 		}
-
-		// Al regresar al centro: realizar el giro final
 		else if (dogRot == -60.0f &&
 			dogPos.x <= 0.0f)
 		{
@@ -611,7 +599,6 @@ void Animation()
 			dogAnim = 4;
 		}
 	}
-
 	// ESTADO 2: GIRAR A LA IZQUIERDA CAMINANDO
 	else if (dogAnim == 2)
 	{
@@ -621,15 +608,11 @@ void Animation()
 		{
 			dogRot = limiteGiro;
 		}
-
-		// El giro largo de B hacia C avanza menos
 		float avanceGiro =
 			(limiteGiro == 90.0f) ? 0.00014f : 0.00005f;
 
 		dogPos.x += avanceGiro * sin(glm::radians(dogRot));
 		dogPos.z += avanceGiro * cos(glm::radians(dogRot));
-
-		// Inclinar la cabeza hacia la izquierda
 		if (dogRot < limiteGiro - 15.0f)
 		{
 			if (head > -25.0f)
@@ -642,7 +625,6 @@ void Animation()
 				head = -25.0f;
 			}
 		}
-		// Enderezar la cabeza al terminar el giro
 		else
 		{
 			if (head < -0.03f)
@@ -678,8 +660,6 @@ void Animation()
 
 		dogPos.x += 0.00009f * sin(glm::radians(dogRot));
 		dogPos.z += 0.00009f * cos(glm::radians(dogRot));
-
-		// Inclinar la cabeza hacia la derecha
 		if (dogRot > limiteGiro + 15.0f)
 		{
 			if (head < 25.0f)
@@ -692,7 +672,6 @@ void Animation()
 				head = 25.0f;
 			}
 		}
-		// Enderezar la cabeza al terminar el giro
 		else
 		{
 			if (head > 0.03f)
@@ -726,12 +705,8 @@ void Animation()
 		{
 			dogRot = 0.0f;
 		}
-
-		// Avanzar ligeramente mientras da la última vuelta
 		dogPos.x += 0.00004f * sin(glm::radians(dogRot));
 		dogPos.z += 0.00004f * cos(glm::radians(dogRot));
-
-		// Acomodar patas y cola
 		if (RLegs > 0.03f)
 		{
 			RLegs -= 0.03f;
@@ -750,8 +725,6 @@ void Animation()
 			FLegs = 0.0f;
 			tail = 0.0f;
 		}
-
-		// Inclinar la cabeza hacia la izquierda
 		if (dogRot < -15.0f)
 		{
 			if (head > -20.0f)
@@ -764,7 +737,6 @@ void Animation()
 				head = -20.0f;
 			}
 		}
-		// Enderezarla al terminar
 		else
 		{
 			if (head < -0.03f)
