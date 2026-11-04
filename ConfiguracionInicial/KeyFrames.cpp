@@ -1,10 +1,11 @@
-//Previo 12
+//Practica 12
 //Sánchez Luján César Ricardo
-//Fecha de entrega: 3 de noviembre del 2026
+//Fecha de entrega: 8 de noviembre del 2026
 //No. de cuenta:321195414
 
 #include <iostream>
 #include <cmath>
+#include <fstream>
 
 // GLEW
 #include <GL/glew.h>
@@ -120,7 +121,7 @@ float bodyPitch = 0.0f;
 //KeyFrames
 float dogPosX , dogPosY , dogPosZ  ;
 
-#define MAX_FRAMES 9
+#define MAX_FRAMES 15
 int i_max_steps = 650;
 int i_curr_steps = 0;
 typedef struct _frame {
@@ -155,6 +156,95 @@ FRAME KeyFrame[MAX_FRAMES];
 int FrameIndex = 0;			//introducir datos
 bool play = false;
 int playIndex = 0;
+
+void guardarAnimacion()
+{
+	std::ofstream archivo("animacion.txt");
+
+	if (!archivo.is_open())
+	{
+		std::cout << "Error al crear archivo" << std::endl;
+		return;
+	}
+
+	archivo << FrameIndex << std::endl;
+
+	for (int i = 0; i < FrameIndex; i++)
+	{
+		archivo << KeyFrame[i].dogPosX << " "
+				<< KeyFrame[i].dogPosY << " "
+				<< KeyFrame[i].dogPosZ << " "
+				<< KeyFrame[i].rotDog << " "
+				<< KeyFrame[i].bodyPitch << " "
+				<< KeyFrame[i].head << " "
+				<< KeyFrame[i].tail << " "
+				<< KeyFrame[i].FLeftLeg << " "
+				<< KeyFrame[i].FRightLeg << " "
+				<< KeyFrame[i].BLeftLeg << " "
+				<< KeyFrame[i].BRightLeg
+				<< std::endl;
+	}
+
+	archivo.close();
+
+	std::cout << "Animacion guardada correctamente" << std::endl;
+}
+
+void cargarAnimacion()
+{
+	std::ifstream archivo("animacion.txt");
+
+	if (!archivo.is_open())
+	{
+		std::cout << "No existe animacion guardada" << std::endl;
+		return;
+	}
+
+	int cantidad;
+
+	if (!(archivo >> cantidad) ||
+		cantidad < 0 || cantidad > MAX_FRAMES)
+	{
+		std::cout << "Cantidad de frames invalida" << std::endl;
+		return;
+	}
+
+	FRAME framesTemp[MAX_FRAMES] = {};
+
+	for (int i = 0; i < cantidad; i++)
+	{
+		if (!(archivo >> framesTemp[i].dogPosX
+			>> framesTemp[i].dogPosY
+			>> framesTemp[i].dogPosZ
+			>> framesTemp[i].rotDog
+			>> framesTemp[i].bodyPitch
+			>> framesTemp[i].head
+			>> framesTemp[i].tail
+			>> framesTemp[i].FLeftLeg
+			>> framesTemp[i].FRightLeg
+			>> framesTemp[i].BLeftLeg
+			>> framesTemp[i].BRightLeg))
+		{
+			std::cout << "Error al leer los frames" << std::endl;
+			return;
+		}
+	}
+
+	play = false;
+	playIndex = 0;
+	i_curr_steps = 0;
+
+	FrameIndex = cantidad;
+
+	for (int i = 0; i < cantidad; i++)
+	{
+		KeyFrame[i] = framesTemp[i];
+	}
+
+	std::cout << "Animacion cargada: "
+		<< FrameIndex << " frames" << std::endl;
+}
+
 
 void saveFrame(void)
 {
@@ -229,7 +319,7 @@ int main()
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);*/
 
 	// Create a GLFWwindow object that we can use for GLFW's functions
-	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Previo 12 Cesar Sanchez", nullptr, nullptr);
+	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Practica 12 Cesar Sanchez", nullptr, nullptr);
 
 	if (nullptr == window)
 	{
@@ -699,33 +789,44 @@ void DoMovement()
 void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mode)
 {
 
-	if (keys[GLFW_KEY_L])
+	if (action == GLFW_PRESS)
 	{
-		if (play == false && (FrameIndex > 1))
+		if (key == GLFW_KEY_K)
 		{
-
-			resetElements();
-			//First Interpolation				
-			interpolation();
-
-			play = true;
-			playIndex = 0;
-			i_curr_steps = 0;
-		}
-		else
-		{
-			play = false;
+			if (FrameIndex < MAX_FRAMES && !play)
+			{
+				saveFrame();
+				std::cout << "Keyframe capturado" << std::endl;
+			}
 		}
 
-	}
-
-	if (keys[GLFW_KEY_K])
-	{
-		if (FrameIndex < MAX_FRAMES)
+		if (key == GLFW_KEY_P)
 		{
-			saveFrame();
+			guardarAnimacion();
 		}
 
+		if (key == GLFW_KEY_O)
+		{
+			cargarAnimacion();
+		}
+
+		if (key == GLFW_KEY_L)
+		{
+			if (!play && FrameIndex > 1)
+			{
+				playIndex = 0;
+				i_curr_steps = 0;
+
+				resetElements();
+				interpolation();
+
+				play = true;
+			}
+			else
+			{
+				play = false;
+			}
+		}
 	}
 
 
