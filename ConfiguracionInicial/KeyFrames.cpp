@@ -6,6 +6,8 @@
 #include <iostream>
 #include <cmath>
 #include <fstream>
+#include <sstream>
+#include <string>
 
 // GLEW
 #include <GL/glew.h>
@@ -116,12 +118,13 @@ float BRightLeg = 0.0f;
 float head = 0.0f;
 float tail = 0.0f;
 float bodyPitch = 0.0f;
+float bodyRoll = 0.0f;
 
 
 //KeyFrames
 float dogPosX , dogPosY , dogPosZ  ;
 
-#define MAX_FRAMES 15
+#define MAX_FRAMES 25
 int i_max_steps = 650;
 int i_curr_steps = 0;
 typedef struct _frame {
@@ -148,6 +151,8 @@ typedef struct _frame {
 	float tailInc;
 	float bodyPitch;
 	float bodyPitchInc;
+	float bodyRoll;
+	float bodyRollInc;
 
 
 }FRAME;
@@ -181,7 +186,8 @@ void guardarAnimacion()
 				<< KeyFrame[i].FLeftLeg << " "
 				<< KeyFrame[i].FRightLeg << " "
 				<< KeyFrame[i].BLeftLeg << " "
-				<< KeyFrame[i].BRightLeg
+				<< KeyFrame[i].BRightLeg << " "
+				<< KeyFrame[i].bodyRoll
 				<< std::endl;
 	}
 
@@ -210,10 +216,21 @@ void cargarAnimacion()
 	}
 
 	FRAME framesTemp[MAX_FRAMES] = {};
+	std::string linea;
+
+	std::getline(archivo, linea);
 
 	for (int i = 0; i < cantidad; i++)
 	{
-		if (!(archivo >> framesTemp[i].dogPosX
+		if (!std::getline(archivo, linea))
+		{
+			std::cout << "Faltan keyframes" << std::endl;
+			return;
+		}
+
+		std::istringstream datos(linea);
+
+		if (!(datos >> framesTemp[i].dogPosX
 			>> framesTemp[i].dogPosY
 			>> framesTemp[i].dogPosZ
 			>> framesTemp[i].rotDog
@@ -225,8 +242,14 @@ void cargarAnimacion()
 			>> framesTemp[i].BLeftLeg
 			>> framesTemp[i].BRightLeg))
 		{
-			std::cout << "Error al leer los frames" << std::endl;
+			std::cout << "Error al leer keyframe "
+				<< i + 1 << std::endl;
 			return;
+		}
+
+		if (!(datos >> framesTemp[i].bodyRoll))
+		{
+			framesTemp[i].bodyRoll = 0.0f;
 		}
 	}
 
@@ -257,6 +280,7 @@ void saveFrame(void)
 
 	KeyFrame[FrameIndex].rotDog = rotDog;
 	KeyFrame[FrameIndex].bodyPitch = bodyPitch;
+	KeyFrame[FrameIndex].bodyRoll = bodyRoll;
 	KeyFrame[FrameIndex].head = head;
 	KeyFrame[FrameIndex].tail = tail;
 	KeyFrame[FrameIndex].FLeftLeg = FLeftLeg;
@@ -282,6 +306,7 @@ void resetElements(void)
 	tail = KeyFrame[0].tail;
 	rotDog = KeyFrame[0].rotDog;
 	bodyPitch = KeyFrame[0].bodyPitch;
+	bodyRoll = KeyFrame[0].bodyRoll;
 
 }
 void interpolation(void)
@@ -291,6 +316,7 @@ void interpolation(void)
 	KeyFrame[playIndex].incY = (KeyFrame[playIndex + 1].dogPosY - KeyFrame[playIndex].dogPosY) / i_max_steps;
 	KeyFrame[playIndex].incZ = (KeyFrame[playIndex + 1].dogPosZ - KeyFrame[playIndex].dogPosZ) / i_max_steps;
 	KeyFrame[playIndex].bodyPitchInc = (KeyFrame[playIndex + 1].bodyPitch - KeyFrame[playIndex].bodyPitch) / i_max_steps;
+	KeyFrame[playIndex].bodyRollInc = (KeyFrame[playIndex + 1].bodyRoll - KeyFrame[playIndex].bodyRoll) / i_max_steps;
 	KeyFrame[playIndex].FLeftLegInc = (KeyFrame[playIndex + 1].FLeftLeg -KeyFrame[playIndex].FLeftLeg) / i_max_steps;
 	KeyFrame[playIndex].FRightLegInc = (KeyFrame[playIndex + 1].FRightLeg - KeyFrame[playIndex].FRightLeg) / i_max_steps;
 	KeyFrame[playIndex].BLeftLegInc = (KeyFrame[playIndex + 1].BLeftLeg - KeyFrame[playIndex].BLeftLeg) / i_max_steps;
@@ -383,6 +409,8 @@ int main()
 		KeyFrame[i].rotDogInc = 0;
 		KeyFrame[i].bodyPitch = 0.0f;
 		KeyFrame[i].bodyPitchInc = 0.0f;
+		KeyFrame[i].bodyRoll = 0.0f;
+		KeyFrame[i].bodyRollInc = 0.0f;
 		KeyFrame[i].head = 0;
 		KeyFrame[i].headInc = 0;
 		KeyFrame[i].tail = 0.0f;
@@ -531,6 +559,7 @@ int main()
 		modelTemp= model = glm::translate(model, glm::vec3(dogPosX,dogPosY,dogPosZ));
 		modelTemp= model = glm::rotate(model, glm::radians(rotDog), glm::vec3(0.0f, 1.0f, 0.0f));
 		modelTemp= model = glm::rotate(model, glm::radians(bodyPitch), glm::vec3(1.0f, 0.0f, 0.0f));
+		modelTemp= model = glm::rotate(model, glm::radians(bodyRoll), glm::vec3(0.0f, 0.0f, 1.0f));
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 		DogBody.Draw(lightingShader);
 		//Head
@@ -728,6 +757,26 @@ void DoMovement()
 		dogPosX += 0.0001;
 	}
 
+	if (keys[GLFW_KEY_R] && !play)
+	{
+		bodyRoll += 0.2f;
+	}
+
+	if (keys[GLFW_KEY_F] && !play)
+	{
+		bodyRoll -= 0.2f;
+	}
+
+	if (keys[GLFW_KEY_I] && !play)
+	{
+		dogPosY += 0.001f;
+	}
+
+	if (keys[GLFW_KEY_M] && !play)
+	{
+		dogPosY -= 0.001f;
+	}
+
 	// Camera controls
 	if (keys[GLFW_KEY_W] || keys[GLFW_KEY_UP])
 	{
@@ -899,6 +948,7 @@ void Animation() {
 			tail += KeyFrame[playIndex].tailInc;
 			rotDog += KeyFrame[playIndex].rotDogInc;
 			bodyPitch += KeyFrame[playIndex].bodyPitchInc;
+			bodyRoll += KeyFrame[playIndex].bodyRollInc;
 
 			i_curr_steps++;
 		}
